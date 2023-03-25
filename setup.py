@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dicta",
-    version="0.8.141",
+    version="0.8.142",
     author="peterwendl",
     author_email="dev@peterwendl.de",
     description="A dict subclass to observe data changes in the nested data-tree.",
