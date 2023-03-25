@@ -26,7 +26,7 @@ pip3 install dicta
 ## How to use
 
 ```python
-import dicta
+from dicta import *
 
 # Declare the 'Dicta' class.
 dicta = Dicta()
