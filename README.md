@@ -26,10 +26,10 @@ pip3 install dicta
 ## How to use
 
 ```python
-from dicta import *
+import dicta
 
 # Declare the 'Dicta' class.
-dicta = Dicta()
+dicta = dicta.Dicta()
 
 # Activate binary serialization
 dicta.setBinarySerializer(True)
