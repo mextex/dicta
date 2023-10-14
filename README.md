@@ -73,7 +73,7 @@ dicta["entities"].pop("persons")
 # Import additional data from another file. 
 # (New data will be added. Old data remains but will 
 # be overwritten if dict keys match.)
-dicta.insert("additional_data_file.json")
+dicta.importFile("additional_data_file.json")
 
 # Export the data to another file
 dicta.export("data_backup.json")
