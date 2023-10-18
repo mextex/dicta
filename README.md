@@ -4,8 +4,10 @@ A dict subclass that observes a nested dict and listens for changes in its data 
 
 ## Core Functionality
 
+- Detect data changes in a nested dict
 - Throw a callback, when the nested data structure changes
 - Write data to a JSON file, when the nested data structure changes
+- Easily import & export JSON files to/from a nested dict
 
 ## Features
 
