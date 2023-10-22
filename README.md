@@ -92,6 +92,8 @@ dicta.stringify()
 
 ```python
 Dicta(*args, **kwargs)
+Dicta(dict)
+Dicta(key=value,key2=value)
 ```
 
 A dict subclass.
@@ -222,6 +224,17 @@ Remove a data file.
 
 ---
 
+##### Dicta.importData(*args,**kwargs)
+
+```python
+Dicta.importData(dict)
+Dicta.importData(key=value,key2=value2…)
+```
+
+Import data as dict or key/value pairs.
+
+---
+
 ##### Dicta.dictify()
 
 ```python
@@ -276,13 +289,14 @@ If you activate the binary-serializer all non-serializable objects will be encod
 
 ###### Parameter
 
-- **use_binary_serializer** *(bool) (default = False)*
+- **binary_serializer** *(bool) (default = False)*
 - **serializer_hook** *(string) (optional / default = '\<serialized-object>')*
 
 ###### Example
 
 ```python
-myDictObserver.useBinarySerializer(True, '<my_serialzer_hook>')
+myDicta.setBinarySerializer(True)
+myDicta.setBinarySerializer(True, '<my_serialzer_hook>')
 ```
 
 ---

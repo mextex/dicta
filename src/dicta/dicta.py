@@ -396,7 +396,8 @@ class Dicta(dict, ChildConverter, DictUpdater):
     You can export data to json files.
     
     How to use:
-    data = Dicta(path="my_data_file.json", callback=my_callback)
+    data = Dicta()
+    data = Dicta(dict)
     '''
         
     def __init__(self, *args, **kwargs):
@@ -551,6 +552,16 @@ class Dicta(dict, ChildConverter, DictUpdater):
             self.update(**data)
         else:
             print("Dicta -> importFile: File '{}' does not exist.".format(path))
+            
+    def importData(self, *args, **kwargs):
+        '''
+        Insert/Import data.
+        
+        importData(dict)
+        importData(key=value,key2=value…)
+        
+        '''
+        self.update(*args, **kwargs)
         
     # Convert all <NestedSet Classes> to <set classes> before serializing,
     # in order to subclass them correctly with <ParrentCaller> while loading them
