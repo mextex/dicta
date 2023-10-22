@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dicta"
+version = "1.0.0"
+authors = [
+    { name="Peter Wendl", email="dev@peterwendl.de" },
+]
+description = "A dict subclass to observe data changes in the nested data-tree."
+keywords = ["nested dict", "json", "dict"]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/mextex/dicta"
