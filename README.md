@@ -48,6 +48,8 @@ def callback():
 dicta.bind(callback)
 
 # Add data
+dicta.importData({"key":"value"})
+dicta.importData(key2=value2, key3=value3)
 dicta["entities"] = {}
 dicta["entities"]["persons"] = []
 
@@ -78,7 +80,7 @@ dicta["entities"].pop("persons")
 dicta.importFile("additional_data_file.json")
 
 # Export the data to another file
-dicta.export("data_backup.json")
+dicta.exportFile("data_backup.json")
 
 # Get string representation of the Dicta
 dicta.stringify()
