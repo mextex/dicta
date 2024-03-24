@@ -532,11 +532,16 @@ class Dicta(dict, ChildConverter, DictUpdater):
         if reset or not os.path.exists(path):
             self.clearFile(path)
         with open(path) as f:
-                if self.binary_serializer:
+            if self.binary_serializer:
+                try:
                     data = json.load(f, object_hook=self.__deserialize__)
-                else:
-                    data = json.load(f)
-                f.close()
+                except:
+                    print("ERROR!: Dicta.synchFile(): Could not set sync file. File '{}' contains no JSON object. Call Dicta.syncFile(path, reset=True) to overwrite file content or provide path to a json file.".format(path))
+                    data = {}
+                    self.path = None
+            else:
+                data = json.load(f)
+            f.close()
         self.update(**data)
         return data
     
