@@ -536,7 +536,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 try:
                     data = json.load(f, object_hook=self.__deserialize__)
                 except:
-                    print("ERROR!: Dicta.synchFile(): Could not set sync file. File '{}' contains no JSON object. Call Dicta.syncFile(path, reset=True) to overwrite file content or provide path to a json file.".format(path))
+                    print("ERROR!: Dicta.synchFile(): Could not set syncfile. File '{}' contains no JSON object. Call Dicta.syncFile(path, reset=True) to overwrite file the content or provide a path to another json file.".format(path))
                     data = {}
                     self.path = None
             else:
