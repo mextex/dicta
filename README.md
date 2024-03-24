@@ -154,7 +154,9 @@ Dicta.syncFile(path, reset=False)
 
 Sets the sync file to automatically store the data on data change. If `reset=False` (default) old data will remain and will be updated with new data . If `reset=True` the data wil be cleared when `syncFile()` is called.
 
-**This will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization manually with `Dicta.useBinarySerializer(True)`.
+**Data sync is monodirectional!** Though the data is automatically synced to your syncfile data is not synced to your dicta instance if filedata changes. Use Dicta.sync() to pull data from file into your dict.
+
+**Sync will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization manually with `Dicta.useBinarySerializer(True)`.
 
 If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.useBinarySerializer()`.
 
@@ -162,6 +164,16 @@ If you activate the binary-serializer all non-serializable objects will be encod
 
 - **path** *(string)*
 - **reset** *(bool) (optional / default = False)*
+
+---
+
+##### Dicta.sync()
+
+```python
+Dicta.sync()
+```
+
+Pulls syncfile data into your Dicta instance.
 
 ---
 
