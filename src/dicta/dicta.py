@@ -641,8 +641,8 @@ class Dicta(dict, ChildConverter, DictUpdater):
     def clearFile(self, path):
         '''Clear a file. Use with care'''
         with open(path, 'w') as f:
-                f.write("{}")
-                f.close()
+            f.write("{}")
+            f.close()
 
     def removeFile(self, path):
         '''Delete a file. Use with care'''
