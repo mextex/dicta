@@ -540,6 +540,13 @@ class Dicta(dict, ChildConverter, DictUpdater):
         self.update(**data)
         return data
     
+    def sync(self):
+        '''Pull syncfile data into Dicta.'''
+        if self.path:
+            self.importFile(self.path)
+        else:
+            print("Dicta.sync(): Please provide sync file path first. Use Dicta.syncFile(path)")
+    
     def importFile(self, path):
         '''Insert/Import data from a file.'''
         if os.path.exists(path):
@@ -551,7 +558,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 f.close()
             self.update(**data)
         else:
-            print("Dicta -> importFile: File '{}' does not exist.".format(path))
+            print("Dicta.importFile(): File '{}' does not exist.".format(path))
             
     def importData(self, *args, **kwargs):
         '''
@@ -642,7 +649,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
         if os.path.exists(path):
             os.remove(path)
         else:
-            print("Dicta -> removeFile: File '{}' does not exist.".format(path))
+            print("Dicta.removeFile(): File '{}' does not exist.".format(path))
     
     def setBinarySerializer(self, mode=False, serializer_hook=None):
         '''For security reasons binary serialization of non-serializable objects is 
