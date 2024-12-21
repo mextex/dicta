@@ -18,7 +18,6 @@ A dict subclass that observes a nested dict and listens for changes in its data 
 - Import/Insert additional data from json files.
 - Export data to json files.
 
-
 ## Install
 
 ```

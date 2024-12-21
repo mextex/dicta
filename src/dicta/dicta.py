@@ -580,18 +580,17 @@ class Dicta(dict, ChildConverter, DictUpdater):
     # back into Dicta while deserializing.
     def dictify(self):
         '''Returns a plain dict representation of the data without Dicta functionality'''
-        return self.__rewrite_recursively__()
+        return self.__rewrite_recursively__(init=True)
     
-    def __rewrite_recursively__(self, obj=None, new=None):
-        if not obj:
+    def __rewrite_recursively__(self, obj=None, new=None, init=False):
+        if init:
             obj=self
         if not new:
             new={}
         if isinstance(obj, dict):
             new = dict()
             for key, value in obj.items():
-                if bool(value):
-                    new[key] = self.__rewrite_recursively__(value, new)
+                new[key] = self.__rewrite_recursively__(value, new)
         elif isinstance(obj, list):
             new = list()
             for i in range(len(obj)):
