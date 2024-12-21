@@ -35,8 +35,8 @@ dicta = dicta.Dicta()
 # Activate binary serialization
 dicta.setBinarySerializer(True)
 
-# Set a synch file path.
-dicta.synchFile("data.json")
+# Set a sync file path.
+dicta.syncFile("data.json")
 
 # Define the callback method
 def callback():
