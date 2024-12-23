@@ -377,7 +377,7 @@ class NestedList(list, ChildConverter, ParentCaller):
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
 # -------------------------------------------------------------------------------------------------------- Dicta Class
-class Dicta(dict, classes.ChildConverter, classes.DictUpdater):
+class Dicta(dict, ChildConverter, DictUpdater):
     '''
     A dict subclass that observes a nested dict and listens for changes in its data 
     structure. If a data change is registered, Dicta reacts with a callback 
@@ -476,7 +476,7 @@ class Dicta(dict, classes.ChildConverter, classes.DictUpdater):
     
     def __serialize__(self):
         if self.binary_serializer:
-            dict_str = classes.Serializer(self.serializer_hook).encode(self.dictify())
+            dict_str = Serializer(self.serializer_hook).encode(self.dictify())
         else:
             dict_str = json.dumps(self.dictify())
         return dict_str
@@ -548,7 +548,7 @@ class Dicta(dict, classes.ChildConverter, classes.DictUpdater):
 
     def update(self, *args, **kwargs):
         '''Update the data tree with *args and **kwargs'''
-        classes.DictUpdater.update(self, *args, **kwargs)
+        DictUpdater.update(self, *args, **kwargs)
 
     def bind_callback(self, callback, response=None, *args, **kwargs):
         '''Set the callback function'''
