@@ -4,7 +4,6 @@ import os
 import re
 import pickle
 import json
-import classes
 
 default_serializer_hook = "<serialized_object>"
 
