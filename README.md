@@ -1,13 +1,12 @@
 # dicta
 
-A dict subclass that observes a nested dict and listens for changes in its data structure. If a data change is registered, Dicta reacts with a callback or a data-export to a JSON file.
+Dicta is a dict subclass that behaves like a normal nested dict but adds some key functions:
 
-## Core Functionality
+- dicta detects data changes and throws a callback if that is the case (optional).
 
-- Detect data changes in a nested dict
-- Throw a callback, when the nested data structure changes
-- Write data to a JSON file, when the nested data structure changes
-- Easily import & export JSON files to/from a nested dict
+- dicta automatically syncs its data with a JSON file (optional).
+
+- dicta imports & exports data from JSON files
 
 ## Features
 
@@ -20,7 +19,7 @@ A dict subclass that observes a nested dict and listens for changes in its data 
 
 ## Install
 
-```
+```bash
 pip3 install dicta
 ```
 
@@ -29,67 +28,56 @@ pip3 install dicta
 ```python
 import dicta
 
+# ------------ Core functionality:
+
 # Declare the 'Dicta' class.
 dicta = dicta.Dicta()
 
-# Activate binary serialization
-dicta.setBinarySerializer(True)
-
 # Set a sync file path.
-dicta.syncFile("data.json")
+dicta.bind_file("data.json")
 
-# Define the callback method
+# Define a callback method
 def callback():
     print("Data changed!")
     print(dicta)
 
 # Bind the callback method to dicta
-dicta.bind(callback)
+dicta.bind_callback(callback)
 
-# Add data
-dicta.importData({"key":"value"})
-dicta.importData(key2=value2, key3=value3)
+# Add data in the same way as if you would use a normal dict:
+dicta.update({"key":"value"})
+dicta.update(key2=value2, key3=value3)
 dicta["entities"] = {}
 dicta["entities"]["persons"] = []
-
 dicta["entities"]["persons"].append({"name":"john", "age":23})
-dicta["entities"]["persons"].append({"name":"peter", "age":13})
+dicta["entities"]["persons"].append({"name":"peter", "age":24})
 
-# Update a key in a dict
-dicta["entities"]["persons"][1]["age"] = 42
-
-# Add another nested list to the dict
-dicta["entities"]["animals"] = []
-dicta["entities"]["animals"].append("lion")
-dicta["entities"]["animals"].append("elephant")
-
-# Slice item from list
-del dicta["entities"]["animals"][0:1]
-
-# Remove item from dict
+# Use regular dict methods
+del dicta["entities"]["persons"][0:1]
 dicta["entities"].pop("persons")
 
-# and so forth…
-# Should support all regular dict behaviours and 
-# list methods (pop(), append(), slice(), insert() …)
 
-# Import additional data from another file. 
-# (New data will be added. Old data remains but will 
-# be overwritten if dict keys match.)
-dicta.importFile("additional_data_file.json")
+# ------------ Other dicta methods:
 
-# Export the data to another file
-dicta.exportFile("data_backup.json")
+# Import data from file:
+dicta.import_file("additional_data_file.json")
+
+# Export the data to file
+dicta.export_file("data_backup.json")
 
 # Get string representation of the Dicta
-dicta.stringify()
+string_representation = dicta.stringify()
+
+# Get dict representation of the Dicta
+dict_representation = dicta.dictify()
+
+# Activate binary serialization, if you want to store custom data objects in a sync file:
+dicta.set_serializer(True)
 ```
 
 ## Reference
 
----
-
-#### Dicta()
+### Dicta()
 
 ```python
 Dicta(*args, **kwargs)
@@ -99,12 +87,12 @@ Dicta(key=value,key2=value)
 
 A dict subclass.
 
-###### **Parameter**
+#### **Parameter**
 
 - ***args** *(Optional)*
 - ****kwargs** *(Optional)*
 
-###### **Return**
+#### **Return**
 
 - **Dicta Class**
 
@@ -114,12 +102,10 @@ A dict subclass.
 
 #### Dicta Methods
 
----
-
-##### Dicta.bind()
+##### Dicta.bind_callback()
 
 ```python
-Dicta.bind(callback, response=False, *args, *kwargs)
+Dicta.bind_callback(callback, response=False, *args, *kwargs)
 ```
 
 Sets the callback method for the Dicta Class. If `response=False` (default) the callback method only gets the `*args, *kwargs` as parameters you define. If `response=True` the callback method gets response from the Dicta Class. You should define your callback function with a `*kwargs` parameter or with three positional parameters:
@@ -145,19 +131,19 @@ or
 
 ---
 
-##### Dicta.syncFile()
+##### Dicta.bind_file()
 
 ```python
-Dicta.syncFile(path, reset=False)
+Dicta.bind_file(path, reset=False)
 ```
 
 Sets the sync file to automatically store the data on data change. If `reset=False` (default) old data will remain and will be updated with new data . If `reset=True` the data wil be cleared when `syncFile()` is called.
 
-**Data sync is monodirectional!** Though the data is automatically synced to your syncfile data is not synced to your dicta instance if filedata changes. Use Dicta.sync() to pull data from file into your dict.
+**Data sync is monodirectional!** Though the data is automatically synced to your syncfile data is not synced to your dicta instance if filedata changes. Use Dicta.sync_file() to pull data from file into your dict.
 
-**Sync will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization manually with `Dicta.useBinarySerializer(True)`.
+**Sync will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization manually with `Dicta.set_serializer(True)`.
 
-If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.useBinarySerializer()`.
+If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.set_serializer()`.
 
 ###### **Parameter**
 
@@ -166,20 +152,20 @@ If you activate the binary-serializer all non-serializable objects will be encod
 
 ---
 
-##### Dicta.sync()
+##### Dicta.sync_file()
 
 ```python
-Dicta.sync()
+Dicta.sync_file()
 ```
 
-Pulls syncfile data into your Dicta instance.
+Pulls data from the binded sync file into your Dicta instance.
 
 ---
 
-##### Dicta.importFile()
+##### Dicta.import_file()
 
 ```python
-Dicta.importFile(path)
+Dicta.import_file(path)
 ```
 
 Import data from a file. New data will be added to the DictObsercer, old data remains but will be overwritten if dict keys match.
@@ -190,17 +176,17 @@ Import data from a file. New data will be added to the DictObsercer, old data re
 
 ---
 
-##### Dicta.exportFile()
+##### Dicta.export_file()
 
 ```python
-Dicta.exportFile(path, reset=True)
+Dicta.export_file(path, reset=True)
 ```
 
-Export data to a file. If `reset=True` the data wil be cleared when `exportFile()` (default) is called . If `reset=False` the data will be updated.
+Export data to a file. If `reset=True` the data wil be cleared when `export_file()` (default) is called . If `reset=False` the data will be updated.
 
-**This will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization by calling `Dicta.useBinarySerializer(True)` before.
+**This will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization by calling `Dicta.set_serializer(True)` before.
 
-If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.useBinarySerializer()`.
+If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.set_serializer()`.
 
 ###### **Parameter**
 
@@ -209,10 +195,10 @@ If you activate the binary-serializer all non-serializable objects will be encod
 
 ---
 
-##### Dicta.clearFile()
+##### Dicta.clear_file()
 
 ```python
-Dicta.clearFile(path)
+Dicta.clear_file(path)
 ```
 
 Clear a file.
@@ -223,10 +209,10 @@ Clear a file.
 
 ---
 
-##### Dicta.removeFile()
+##### Dicta.remove_file()
 
 ```python
-Dicta.removeFile(path)
+Dicta.remove_file(path)
 ```
 
 Remove a data file.
@@ -237,14 +223,14 @@ Remove a data file.
 
 ---
 
-##### Dicta.importData(*args,**kwargs)
+##### Dicta.import_data(*args,**kwargs)
 
 ```python
-Dicta.importData(dict)
-Dicta.importData(key=value,key2=value2…)
+Dicta.import_data(dict)
+Dicta.import_data(key=value,key2=value2…)
 ```
 
-Import data as dict or key/value pairs.
+Import data as dict or key/value pairs. Same as Dica.update(*args,**kwargs)
 
 ---
 
@@ -274,9 +260,9 @@ Dicta.stringify(returnBinaries=False)
 
 Returns a string representation of the data in Dicta.
 
-**This will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization by calling `Dicta.useBinarySerializer(True)` before.
+**This will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization by calling `Dicta.set_serializer(True)` before.
 
-If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.useBinarySerializer()`.
+If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.set_serializer()`.
 
 For better readability serialized objects won´t be returned by default and are replaced by a the `'<serialized-object>'` hook. If you want to return the binaries set the `return_binaries`parameter to `True`.
 
@@ -290,10 +276,10 @@ For better readability serialized objects won´t be returned by default and are 
 
 ---
 
-##### Dicta.setBinarySerializer()
+##### Dicta.set_serializer()
 
 ```python
-Dicta.setBinarySerializer(binary_serializer=False, serializer_hook='<serialized-object>')
+Dicta.set_serializer(binary_serializer=False, serializer_hook='<serialized-object>')
 ```
 
 For security reasons binary serialization of non-serializable objects is deactivated by default. You can activate or deactivate binary serialization with this method (default=False).
@@ -308,8 +294,8 @@ If you activate the binary-serializer all non-serializable objects will be encod
 ###### Example
 
 ```python
-myDicta.setBinarySerializer(True)
-myDicta.setBinarySerializer(True, '<my_serialzer_hook>')
+myDicta.set_serializer(True)
+myDicta.set_serializer(True, '<my_serialzer_hook>')
 ```
 
 ---
