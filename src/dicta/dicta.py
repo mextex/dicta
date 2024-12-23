@@ -413,7 +413,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
         self.current_data_string = self.stringify()
         if self.current_data_string != self.prev_data_string:
             if hasattr(self, 'path') and self.path:
-                self.exportFile(self.path)
+                self.export_data(self.path)
             if hasattr(self, 'callback') and self.callback:
                 modify_trace.insert(0, self)
                 if self.response:
@@ -436,7 +436,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
             else:
                 self.callback(*self.callback_args, **self.callback_kwargs)
         if hasattr(self, 'path') and self.path and isinstance(self.path, str):
-            self.exportFile(self.path)
+            self.export_data(self.path)
 
     def __delitem__(self, key):
         super(Dicta, self).__delitem__(key)
@@ -561,7 +561,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
         '''Set the sync file path. Set reset=True if you want to reset the data in the file on startup. Default is False'''
         self.path = path
         if reset or not os.path.exists(path):
-            self.clearFile(path)
+            self.clear_file(path)
         with open(path) as f:
             if self.binary_serializer:
                 try:
@@ -579,7 +579,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
     def sync_file(self):
         '''Pull syncfile data into Dicta.'''
         if self.path:
-            self.importFile(self.path)
+            self.import_file(self.path)
         else:
             print("Dicta.sync(): Please provide sync file path first. Use Dicta.syncFile(path)")
     
@@ -622,7 +622,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
     def export_data(self, path, reset=True):
         '''Export data to a file. Set reset=True if you want to reset the data in the file at first. Default is True'''
         if reset:
-            self.clearFile(path)
+            self.clear_file(path)
         dict_str = self.__serialize__()
         with open(path, 'w') as f:
             f.write(dict_str)
@@ -687,9 +687,9 @@ if __name__ == "__main__":
     # Default Resonse: class modified_object, dict modify_info, list modify_trace
     def callback():
         print(dicta)
-    dicta.bind(callback)
-    dicta.setBinarySerializer(True)
-    dicta.syncFile("data.json", True)
+    dicta.bind_callback(callback)
+    dicta.set_serializer(True)
+    dicta.bind_file("data.json", True)
     
     dicta["set"] = {1,2,4,5}
     dicta["set"].add(6)
