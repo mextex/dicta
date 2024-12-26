@@ -1,83 +1,84 @@
-# dicta
+# Dicta
 
-Dicta is a dict subclass that behaves like a normal nested dict but adds some key functions:
+**Dicta** is a subclass of Python's `dict` that behaves like a normal nested dictionary but with added key features:
 
-- dicta detects changes in its data structure and throws a callback if any data changes (optional).
-
-- dicta automatically syncs its data with a JSON file (optional).
-
-- dicta imports & exports data from JSON files
+- Detects changes in its data structure and triggers a callback (optional).
+- Automatically syncs its data with a JSON file (optional).
+- Imports and exports data from JSON files.
 
 ## Features
 
-- Behaves like a regular `dict` and supports all `dict`, `list`, `tuple` and `set` methods.
-- Supports nesting of all possible datatypes like `dict`, `list`, `tuple`, `set` and other objects like custom classes.
-- Encodes non-serializable objects to a binary-string when writing data to a file (Optional / deactivated by default).
-- Reading data from a file will decode a binary-string back to a non-serializable object (Optional / deactivated by default).
-- Import/Insert additional data from json files.
-- Export data to json files.
+- Behaves like a regular `dict` and supports all `dict`, `list`, `tuple`, and `set` methods.
+- Supports nesting of various data types including `dict`, `list`, `tuple`, `set`, and custom objects.
+- Optionally encodes non-serializable objects to a binary string when writing data to a file.
+- Decodes binary strings back to non-serializable objects when reading from a file.
+- Imports additional data from JSON files.
+- Exports data to JSON files.
 
-## Install
+## Installation
+
+To install Dicta, use pip:
 
 ```bash
 pip3 install dicta
 ```
 
-## How to use
+## Usage
+
+Here's how to use Dicta:
 
 ```python
 import dicta
 
-# ------------ Core functionality:
+# Core functionality:
 
 # Declare the 'Dicta' class.
-dicta = dicta.Dicta()
+my_dicta = dicta.Dicta()
 
 # Set a sync file path.
-dicta.bind_file("data.json")
+my_dicta.bind_file("data.json")
 
 # Define a callback method
 def callback():
     print("Data changed!")
-    print(dicta)
+    print(my_dicta)
 
 # Bind the callback method to dicta
-dicta.bind_callback(callback)
+my_dicta.bind_callback(callback)
 
-# Add data in the same way as if you would use a normal dict:
-dicta.update({"key":"value"})
-dicta.update(key2=value2, key3=value3)
-dicta["entities"] = {}
-dicta["entities"]["persons"] = []
-dicta["entities"]["persons"].append({"name":"john", "age":23})
-dicta["entities"]["persons"].append({"name":"peter", "age":24})
+# Add data as you would with a normal dict:
+my_dicta.update({"key": "value"})
+my_dicta.update(key2="value2", key3="value3")
+my_dicta["entities"] = {}
+my_dicta["entities"]["persons"] = []
+my_dicta["entities"]["persons"].append({"name": "john", "age": 23})
+my_dicta["entities"]["persons"].append({"name": "peter", "age": 24})
 
 # Use regular dict methods
-del dicta["entities"]["persons"][0:1]
-dicta["entities"].pop("persons")
+del my_dicta["entities"]["persons"][0:1]
+my_dicta["entities"].pop("persons")
 
-
-# ------------ Other dicta methods:
+# Other dicta methods:
 
 # Import data from file:
-dicta.import_file("additional_data_file.json")
+my_dicta.import_file("additional_data_file.json")
 
 # Export the data to file
-dicta.export_file("data_backup.json")
+my_dicta.export_file("data_backup.json")
 
 # Get string representation of the Dicta
-string_representation = dicta.stringify()
+string_representation = my_dicta.stringify()
 
 # Get dict representation of the Dicta
-dict_representation = dicta.dictify()
+dict_representation = my_dicta.dictify()
 
-# Activate binary serialization, if you want to store custom data objects in a sync file:
-dicta.set_serializer(True)
+# Activate binary serialization to store custom data objects in a sync file:
+my_dicta.set_serializer(True)
 ```
 
 ## Reference
 
-### Dicta()
+### Dicta Class
 
 ```python
 Dicta(*args, **kwargs)
@@ -85,12 +86,12 @@ Dicta(dict)
 Dicta(key=value,key2=value)
 ```
 
-A dict subclass.
+A ```dict``` subclass.
 
-#### **Parameter**
+#### **Parameters**
 
-- ***args** *(Optional)*
-- ****kwargs** *(Optional)*
+- **args** (Optional)
+- **kwargs** (Optional)
 
 #### **Return**
 
