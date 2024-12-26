@@ -2,7 +2,7 @@
 
 Dicta is a dict subclass that behaves like a normal nested dict but adds some key functions:
 
-- dicta detects data changes and throws a callback if that is the case (optional).
+- dicta detects changes in its data structure and throws a callback if any data changes (optional).
 
 - dicta automatically syncs its data with a JSON file (optional).
 
