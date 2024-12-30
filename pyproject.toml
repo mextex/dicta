@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dicta"
-version = "1.2.0"
+version = "1.2.1"
 authors = [
     { name="Peter Wendl", email="dev@peterwendl.de" },
 ]
-description = "A `dict` subclass that detects changes in its data structure. It triggers a callback and/or exports its data to JSON file if the data has changed."
+description = "A `dict` subclass that detects changes in its data structure. It triggers a callback and/or exports its data to a JSON file if the data has changed."
 keywords = ["nested-objects", "json", "dict", "serialization", "listener", "fileimport", "callback"]
 readme = "README.md"
 license = {file = "LICENSE"}
