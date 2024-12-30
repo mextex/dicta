@@ -58,24 +58,22 @@ my_dicta["entities"]["persons"].append({"name": "peter", "age": 24})
 del my_dicta["entities"]["persons"][0:1]
 my_dicta["entities"].pop("persons")
 
-# Other dicta methods:
+# Dicta methods:
 
-# Import data from file:
+# Import data from a file:
 my_dicta.pull("additional_data_file.json")
 
-# Export the data to file
+# Export the data to a file
 my_dicta.push("data_backup.json")
 
 # Get string representation of the Dicta
-string_representation = my_dicta.stringify()
+print(my_dicta.stringify())
 
 # Get dict representation of the Dicta
 dict_representation = my_dicta.dictify()
 
-
-my_dicta.set_serializer(True)
-
 # Activate binary serialization to store sets or custom data objects in a sync file
+my_dicta.set_serializer(True)
 my_dicta["set"] = {1,2,4,5}
 my_dicta["set"].add(6)
 ```
