@@ -763,7 +763,7 @@ if __name__ == "__main__":
 
     # Set Callback method with optional *args and *kwargs
     # add a **kwargs parameter to the callback function if you want response (default is False). 
-    # Default Resonse: class modified_object, dict modify_info, list modify_trace
+    # Default Response: class modified_object, dict modify_info, list modify_trace
     def callback():
         print(dicta)
     dicta.bind_callback(callback)
