@@ -401,7 +401,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
     # --------------------------------- Private Methods
     def __init__(self, *args, **kwargs):
         self.path = None
-        self.prev_data_string = None
+        self.__prev_data_string = None
         self.callback = None
         self.callback_args = None
         self.callback_kwargs = None
@@ -410,17 +410,17 @@ class Dicta(dict, ChildConverter, DictUpdater):
         self.update(*args, **kwargs)
 
     def __call_from_child__(self, modified_object, modify_info, modify_trace):
-        self.current_data_string = self.stringify()
-        if self.current_data_string != self.prev_data_string:
+        self.__current_data_string = self.stringify()
+        if self.__current_data_string != self.__prev_data_string:
             if hasattr(self, 'path') and self.path:
-                self.export_data(self.path)
+                self.__export_file(self.path)
             if hasattr(self, 'callback') and self.callback:
                 modify_trace.insert(0, self)
                 if self.response:
                     self.callback(modified_object=modified_object, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)    
                 else:
                     self.callback(*self.callback_args, **self.callback_kwargs)
-            self.prev_data_string = self.current_data_string
+            self.__prev_data_string = self.__current_data_string
 
     def __setitem__(self, key, val):
         super(Dicta, self).__setitem__(key, self.__convert_child__(val))
@@ -436,7 +436,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
             else:
                 self.callback(*self.callback_args, **self.callback_kwargs)
         if hasattr(self, 'path') and self.path and isinstance(self.path, str):
-            self.export_data(self.path)
+            self.__export_file(self.path)
 
     def __delitem__(self, key):
         super(Dicta, self).__delitem__(key)
@@ -494,7 +494,46 @@ class Dicta(dict, ChildConverter, DictUpdater):
                     obj[i] = self.__deserialize__(obj[i])
         return obj
 
+    def __import_file(self, path):
+        if os.path.exists(path):
+            with open(path) as f:
+                if self.binary_serializer:
+                    data = json.load(f, object_hook=self.__deserialize__)
+                else:
+                    data = json.load(f)
+                f.close()
+            self.update(**data)
+        else:
+            print("Dicta.importFile(): File '{}' does not exist.".format(path))
+    
+    def __export_file(self, path, reset=True):
+        if reset:
+            self.__clear_file(path)
+        dict_str = self.__serialize__()
+        with open(path, 'w') as f:
+            f.write(dict_str)
+            f.close()
+    
+    def __clear_file(self, path):
+        '''Clear a file. Use with care'''
+        with open(path, 'w') as f:
+            f.write("{}")
+            f.close()
+    
+    def __remove_file(self, path):
+        if os.path.exists(path):
+            os.remove(path)
+        else:
+            print("Dicta.removeFile(): File '{}' does not exist.".format(path))
+    
+    def __deprecated(self, old_func, new_func=None):
+        if new_func:
+            print("Attention! The method '{}' is deprecated and will be removed in future updates. Please use '{}' instead.".format(old_func, new_func))
+        else:
+            print("Attention! The method '{}' is deprecated and will be removed in future updates.".format(old_func))
+
     # --------------------------------- Public Methods
+    # Default dict methods
     def clear(self):
         super(Dicta, self).clear()
         if self.response:
@@ -547,9 +586,15 @@ class Dicta(dict, ChildConverter, DictUpdater):
         return r
 
     def update(self, *args, **kwargs):
-        '''Update the data tree with *args and **kwargs'''
+        '''Update the data tree with *args and **kwargs
+        
+        importData(dict)
+        importData(key=value,key2=value…)
+        
+        '''
         DictUpdater.update(self, *args, **kwargs)
 
+    # Custom dict methods
     def bind_callback(self, callback, response=None, *args, **kwargs):
         '''Set the callback function'''
         self.callback = callback
@@ -561,13 +606,13 @@ class Dicta(dict, ChildConverter, DictUpdater):
         '''Set the sync file path. Set reset=True if you want to reset the data in the file on startup. Default is False'''
         self.path = path
         if reset or not os.path.exists(path):
-            self.clear_file(path)
+            self.__clear_file(path)
         with open(path) as f:
             if self.binary_serializer:
                 try:
                     data = json.load(f, object_hook=self.__deserialize__)
                 except:
-                    print("ERROR!: Dicta.syncFile(): Could not set syncfile. File '{}' contains no JSON object. Call Dicta.syncFile(path, reset=True) to overwrite file the content or provide a path to another json file.".format(path))
+                    print("ERROR!: Dicta.bind_file(): Could not set sync file. File '{}' contains no JSON object. Call Dicta.bind_file(path, reset=True) to overwrite file the content or provide a path to another json file.".format(path))
                     data = {}
                     self.path = None
             else:
@@ -575,58 +620,54 @@ class Dicta(dict, ChildConverter, DictUpdater):
             f.close()
         self.update(**data)
         return data
-
-    def sync_file(self):
-        '''Pull syncfile data into Dicta.'''
-        if self.path:
-            self.import_file(self.path)
-        else:
-            print("Dicta.sync(): Please provide sync file path first. Use Dicta.syncFile(path)")
     
-    def import_file(self, path):
-        '''Insert/Import data from a file.'''
-        if os.path.exists(path):
-            with open(path) as f:
-                if self.binary_serializer:
-                    data = json.load(f, object_hook=self.__deserialize__)
-                else:
-                    data = json.load(f)
-                f.close()
-            self.update(**data)
+    def pull(self, path=None):
+        '''
+        Pull/Import data from a JSON file into Dicta.
+        
+        Dicta.pull() >> pulls data from the file that was binded with Dicta.bind_file(path)
+        Dicta.pull('my/path.json') >> pulls data from the file at the given path
+        '''
+        if path:
+            self.__import_file(path)
+        elif self.path:
+            self.__import_file(self.path)
         else:
-            print("Dicta.importFile(): File '{}' does not exist.".format(path))
+            print("Dicta.pull(): Please provide path or bind a sync file first. Use Dicta.bind_file(path)")
     
-    def clear_file(self, path):
-        '''Clear a file. Use with care'''
-        with open(path, 'w') as f:
-            f.write("{}")
-            f.close()
-
-    def remove_file(self, path):
-        '''Delete a file. Use with care'''
-        if os.path.exists(path):
-            os.remove(path)
+    def push(self, path, reset=True):
+        '''
+        Push/Export data to a file. Set reset=True if you want to reset the data in the file at first. Default is True
+        '''
+        self.__export_file(path, reset)
+    
+    def clear_file(self, path=None):
+        '''
+        Clear the file. Use with care.
+        
+        Dicta.clear_file('my/path.json') >> clears the file at the given path
+        Dicta.clear_file() >> clears the file that was binded with Dicta.bind_file(path)
+        '''
+        if path:
+            self.__clear_file(path)
+        elif self.path:
+            self.__clear_file(self.path)
         else:
-            print("Dicta.removeFile(): File '{}' does not exist.".format(path))
+            print("Dicta.clearFile(): Please provide path or bind a sync file first. Use Dicta.bind_file(path)")
 
-    def import_data(self, *args, **kwargs):
+    def remove_file(self, path=None):
         '''
-        Insert/Import data.
+        Delete a file. Use with care
         
-        importData(dict)
-        importData(key=value,key2=value…)
-        
+        Dicta.remove_file('my/path.json') >> deletes the file at the given path
+        Dicta.remove_file() >> deletes the file that was binded with Dicta.bind_file(path)
         '''
-        self.update(*args, **kwargs)
-
-    def export_data(self, path, reset=True):
-        '''Export data to a file. Set reset=True if you want to reset the data in the file at first. Default is True'''
-        if reset:
-            self.clear_file(path)
-        dict_str = self.__serialize__()
-        with open(path, 'w') as f:
-            f.write(dict_str)
-            f.close()
+        if path:
+            self.__remove_file(path)
+        elif self.path:
+            self.__remove_file(self.path)
+        else:
+            print("Dicta.remove_file(): Please provide path or bind a sync file first. Use Dicta.bind_file(path)")
 
     # Convert all <NestedSet Classes> to <set classes> before serializing,
     # in order to subclass them correctly with <ParentCaller> while loading them
@@ -676,6 +717,44 @@ class Dicta(dict, ChildConverter, DictUpdater):
             self.serializer_hook = serializer_hook
         else:
             self.serializer_hook = default_serializer_hook
+    
+    # Deprecated Methods
+    def import_data(self, *args, **kwargs):
+        '''
+        Deprecated method. Use update() instead.
+        Insert/Import data.
+        
+        importData(dict)
+        importData(key=value,key2=value…)
+        
+        '''
+        self.__deprecated("import_data()", "update()")
+        self.update(*args, **kwargs)
+    
+    def import_file(self, path):
+        '''
+        Deprecated method. Use pull() instead.
+        Insert/Import data from a file.
+        '''
+        self.__deprecated("import_file()", "pull()")
+        self.pull(path)
+    
+    def sync_file(self):
+        '''
+        Deprecated method. Use pull() instead.
+        Pull syncfile data into Dicta.
+        
+        '''
+        self.__deprecated("sync_file()", "pull()")
+        self.pull()
+
+    def export_data(self, path, reset=True):
+        '''
+        Deprecated method! Use push() instead.
+        Export data to a file. Set reset=True if you want to reset the data in the file at first. Default is True
+        '''
+        self.__deprecated("export_data()", "push()")
+        self.__export_file(path, reset)
 
 # -------------------------------------------------------------------------------------------------------- Main
 if __name__ == "__main__":
@@ -695,4 +774,5 @@ if __name__ == "__main__":
     dicta["set"].add(6)
     dicta["list"] = [1,2,4,5]
     dicta["list"].append(6)
-    
+
+

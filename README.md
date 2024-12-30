@@ -61,10 +61,10 @@ my_dicta["entities"].pop("persons")
 # Other dicta methods:
 
 # Import data from file:
-my_dicta.import_file("additional_data_file.json")
+my_dicta.pull("additional_data_file.json")
 
 # Export the data to file
-my_dicta.export_file("data_backup.json")
+my_dicta.push("data_backup.json")
 
 # Get string representation of the Dicta
 string_representation = my_dicta.stringify()
@@ -72,8 +72,12 @@ string_representation = my_dicta.stringify()
 # Get dict representation of the Dicta
 dict_representation = my_dicta.dictify()
 
-# Activate binary serialization to store custom data objects in a sync file:
+
 my_dicta.set_serializer(True)
+
+# Activate binary serialization to store sets or custom data objects in a sync file
+my_dicta["set"] = {1,2,4,5}
+my_dicta["set"].add(6)
 ```
 
 ## Reference
@@ -153,37 +157,32 @@ If you activate the binary-serializer all non-serializable objects will be encod
 
 ---
 
-##### Dicta.sync_file()
+##### Dicta.pull()
 
 ```python
-Dicta.sync_file()
+Dicta.pull(path=None)     
 ```
 
-Pulls data from the binded sync file into your Dicta instance.
-
----
-
-##### Dicta.import_file()
+Import data from a given JSON file (if *path* argument is given) or the binded sync file (if no *path* argument is given) into your Dicta instance. New data will be added to the DictObsercer, old data remains but will be overwritten if dict keys match.
 
 ```python
-Dicta.import_file(path)
+Dicta.pull() >> pulls data from the file that was binded with Dicta.bind_file(path)
+Dicta.pull('my/path.json') >> pulls data from the file at the given path        
 ```
-
-Import data from a file. New data will be added to the DictObsercer, old data remains but will be overwritten if dict keys match.
 
 ###### **Parameter**
 
-- **path** *(string)*
+- **path** *(string) (optional / default = None)*
 
 ---
 
-##### Dicta.export_file()
+##### Dicta.push()
 
 ```python
-Dicta.export_file(path, reset=True)
+Dicta.push(path, reset=True)
 ```
 
-Export data to a file. If `reset=True` the data wil be cleared when `export_file()` (default) is called . If `reset=False` the data will be updated.
+Export/Push data to a file. If `reset=True` the file will be cleared before pushing (default). If `reset=False` the data will be updated.
 
 **This will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization by calling `Dicta.set_serializer(True)` before.
 
@@ -199,39 +198,38 @@ If you activate the binary-serializer all non-serializable objects will be encod
 ##### Dicta.clear_file()
 
 ```python
-Dicta.clear_file(path)
+Dicta.clear_file(path=None)
 ```
 
 Clear a file.
 
+```python
+Dicta.clear_file() >> Clears the binded sync file.
+Dicta.clear_file('my/path.json') >> Clears the file at a given path.
+```
+
 ###### **Parameter**
 
-- **path** *(string)*
+- **path** *(string) (optional / default = None)*
 
 ---
 
 ##### Dicta.remove_file()
 
 ```python
-Dicta.remove_file(path)
+Dicta.remove_file(path=None)
 ```
 
 Remove a data file.
 
-###### **Parameter**
-
-- **path** *(string)*
-
----
-
-##### Dicta.import_data(*args,**kwargs)
-
 ```python
-Dicta.import_data(dict)
-Dicta.import_data(key=value,key2=value2…)
+Dicta.remove_file() >> Removes the binded sync file.
+Dicta.remove_file('my/path.json') >> Removes the file at a given path.
 ```
 
-Import data as dict or key/value pairs. Same as Dica.update(*args,**kwargs)
+###### **Parameter**
+
+- **path** *(string) (optional / default = None)*
 
 ---
 
@@ -345,7 +343,7 @@ NestedDict.popitem(key)
 NestedDict.setdefault(key, default=None)
 ```
 
-*and so forth: keys(), iter() …*
+and so forth: keys(), iter() …
 
 ---
 
@@ -355,7 +353,59 @@ NestedDict.setdefault(key, default=None)
 NestedList.append(item)
 ```
 
-*and so forth: pop()…*
+and so forth: pop()…
+
+---
+
+#### Deprecated Methods
+
+##### Dicta.import_data(*args,**kwargs)
+
+```python
+Dicta.import_data(dict)
+Dicta.import_data(key=value,key2=value2…)
+```
+
+Import data as dict or key/value pairs. Same as Dica.update(*args,**kwargs)
+
+---
+
+##### Dicta.sync_file()
+
+```python
+Dicta.sync_file()
+```
+
+Pulls data from the binded sync file into your Dicta instance.
+
+---
+
+##### Dicta.import_file()
+
+```python
+Dicta.import_file(path)
+```
+
+Import data from a file. New data will be added to the DictObsercer, old data remains but will be overwritten if dict keys match.
+
+---
+
+##### Dicta.export_file()
+
+```python
+Dicta.export_file(path, reset=True)
+```
+
+Export data to a file. If `reset=True` the data wil be cleared when `export_file()` (default) is called . If `reset=False` the data will be updated.
+
+**This will fail if your dict contains non-serializable objects and binary serialization is not activated.** For security reasons this is deactivated by default. You can activate binary serialization by calling `Dicta.set_serializer(True)` before.
+
+If you activate the binary-serializer all non-serializable objects will be encoded to a binary string and packed into a `dict` labeled with the key `'<serialized-object>'`. See the reference for `Dicta.set_serializer()`.
+
+###### **Parameter**
+
+- **path** (string)
+- **reset** *(bool) (optional / default = True)*
 
 ---
 
