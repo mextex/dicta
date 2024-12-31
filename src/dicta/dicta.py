@@ -88,13 +88,15 @@ class Serializer(json.JSONEncoder):
 # -------------------------------------------------------------------------------------------------------- Nested Set Class
 class NestedSet(set, ParentCaller):
     def __init__(self, parent, call_to_parent, iterable):
+        previous_object = self.copy()
         ParentCaller.__init__(self, parent, call_to_parent)
         r = super(NestedSet, self).__init__(iterable)
         modify_info = {
             "type": type(self),
             "mode": "new",
             "iterable": iterable,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -103,61 +105,73 @@ class NestedSet(set, ParentCaller):
         return str(set(self))
     
     def add(self, item):
+        previous_object = self.copy()
         super(NestedSet, self).add(item)
         modify_info = {
             "type": type(self),
             "mode": "add",
             "item": item,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def update(self, iterable):
+        previous_object = self.copy()
         super(NestedSet, self).update(iterable)
         modify_info = {
             "type": type(self),
             "mode": "update",
             "item": iterable,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def pop(self):
+        previous_object = self.copy()
         r = super(NestedSet, self).pop()
         modify_info = {
             "type": type(self),
             "mode": "pop",
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
         
     def remove(self, item):
+        previous_object = self.copy()
         super(NestedSet, self).remove(item)
         modify_info = {
             "type": type(self),
             "mode": "remove",
             "value": item,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def discard(self, item):
+        previous_object = self.copy()
         super(NestedSet, self).discard(item)
         modify_info = {
             "type": type(self),
             "mode": "remove",
             "value": item,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def clear(self):
+        previous_object = self.copy()
         super(NestedSet, self).clear()
         modify_info = {
             "type": type(self),
             "mode": "clear",
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -186,65 +200,77 @@ class NestedDict(dict, ChildConverter, ParentCaller, DictUpdater):
         ParentCaller.__init__(self, parent, call_to_parent)
 
     def __setitem__(self, key, val):
+        previous_object = self.copy()
         super(NestedDict, self).__setitem__(key, self.__convert_child__(val))
         modify_info = {
             "type": type(self),
             "mode": "setitem",
             "key": key,
             "value": val,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
     def __delitem__(self, key):
+        previous_object = self.copy()
         super(NestedDict, self).__delitem__(key)
         modify_info = {
             "type": type(self),
             "mode": "delitem",
             "key": key,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
     def clear(self):
+        previous_object = self.copy()
         super(NestedDict, self).clear()
         modify_info = {
             "type": type(self),
             "mode": "clear",
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
     def pop(self, key):
+        previous_object = self.copy()
         r = super(NestedDict, self).pop(key)
         modify_info = {
             "type": type(self),
             "mode": "pop",
             "key": key,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
 
     def popitem(self, key):
+        previous_object = self.copy()
         r = super(NestedDict, self).popitem(key)
         modify_info = {
             "type": type(self),
             "mode": "popitem",
             "key": key,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
     
     def setdefault(self, key, default=None):
+        previous_object = self.copy()
         r = super(NestedDict, self).setdefault(key, default=default)
         modify_info = {
             "type": type(self),
             "mode": "setdefault",
             "key": key,
             "default": default,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -259,103 +285,121 @@ class NestedList(list, ChildConverter, ParentCaller):
         ParentCaller.__init__(self, parent, call_to_parent)
 
     def __add__(self, item):
+        previous_object = self.copy()
         super(NestedList, self).__add__(item)
         modify_info = {
             "type": type(self),
             "mode": "add",
             "item": item,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
     def __delitem__(self, index):
+        previous_object = self.copy()
         super(NestedList, self).__delitem__(index)
         modify_info = {
             "type": type(self),
             "mode": "delitem",
             "index": index,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
     def __delslice__(self, i, j):
+        previous_object = self.copy()
         super(NestedList, self).__delslice__(i, j)
         modify_info = {
             "type": type(self),
             "mode": "delslice",
             "start": i,
             "end": j,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
     def __setitem__(self, index, value):
+        previous_object = self.copy()
         super(NestedList, self).__setitem__(index, self.__convert_child__(value))
         modify_info = {
             "type": type(self),
             "mode": "setitem",
             "index": index,
             "value": value,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def __setslice__(self, i, j, y):
+        previous_object = self.copy()
         super(NestedList, self).__setslice__(i, j, y)
         modify_info = {
             "type": type(self),
             "mode": "setsclice",
             "start": i,
             "end": j,
-            "item": y,
-            "modified_object": self
+            "sequence": y,
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def append(self, obj):
         '''L.append(object) -- append object to end'''
+        previous_object = self.copy()
         super(NestedList, self).append(self.__convert_child__(obj))
         modify_info = {
             "type": type(self),
             "mode": "append",
             "item": obj,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def extend(self, iterable):
         '''L.extend(iterable) -- extend list by appending elements from the iterable'''
+        previous_object = self.copy()
         for item in iterable:
             self.append(self.__convert_child__(item))
         modify_info = {
             "type": type(self),
             "mode": "extend",
             "iterable": iterable,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def insert(self, index, item):
         '''L.insert(index, object) -- insert object before index'''
+        previous_object = self.copy()
         super(NestedList, self).insert(index, self.__convert_child__(item))
         modify_info = {
             "type": type(self),
             "mode": "insert",
             "index": index,
             "item": item,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def pop(self, index=-1):
         '''L.pop([index]) -> item -- remove and return item at index (default last).
         Raises IndexError if list is empty or index is out of range.'''
+        previous_object = self.copy()
         r = super(NestedList, self).pop(index)
         modify_info = {
             "type": type(self),
             "mode": "pop",
             "index": index,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -363,44 +407,52 @@ class NestedList(list, ChildConverter, ParentCaller):
     def remove(self, value):
         '''L.remove(value) -- remove first occurrence of value.
         Raises ValueError if the value is not present.'''
+        previous_object = self.copy()
         super(NestedList, self).remove(value)
         modify_info = {
             "type": type(self),
             "mode": "remove",
             "value": value,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def clear(self):
+        previous_object = self.copy()
         super(NestedList, self).clear()
         modify_info = {
             "type": type(self),
             "mode": "clear",
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def reverse(self):
         '''L.reverse() -- reverse *IN PLACE*'''
+        previous_object = self.copy()
         super(NestedList, self).reverse()
         modify_info = {
             "type": type(self),
             "mode": "reverse",
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
     def sort(self, key=None, reverse=False):
         '''L.sort(cmp=None, key=None, reverse=False) -- stable sort *IN PLACE*;
         cmp(x, y) -> -1, 0, 1'''
+        previous_object = self.copy()
         super(NestedList, self).sort(key=key, reverse=reverse)
         modify_info = {
             "type": type(self),
             "mode": "sort",
             "key": key,
             "reverse": reverse,
-            "modified_object": self
+            "modified_object": self,
+            "previous_object": previous_object
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -450,6 +502,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
             self.__prev_data_string = self.__current_data_string
 
     def __setitem__(self, key, val):
+        previous_object = self.copy()
         super(Dicta, self).__setitem__(key, self.__convert_child__(val))
         if hasattr(self, 'callback') and self.callback:
             if self.get_event:
@@ -458,7 +511,8 @@ class Dicta(dict, ChildConverter, DictUpdater):
                     "mode": "setitem",
                     "key": key,
                     "value": val,
-                    "modified_object": self
+                    "modified_object": self,
+                    "previous_object": previous_object
                 }
                 self.callback(modify_info)
             else:
@@ -467,13 +521,15 @@ class Dicta(dict, ChildConverter, DictUpdater):
             self.__export_file(self.path)
 
     def __delitem__(self, key):
+        previous_object = self.copy()
         super(Dicta, self).__delitem__(key)
         if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "delitem",
                 "key": key,
-                "modified_object": self
+                "modified_object": self,
+                "previous_object": previous_object
             }
             self.callback(modify_info)
         else:
@@ -564,25 +620,29 @@ class Dicta(dict, ChildConverter, DictUpdater):
     # --------------------------------- Public Methods
     # Default dict methods
     def clear(self):
+        previous_object = self.copy()
         super(Dicta, self).clear()
         if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "clear",
-                "modified_object": self
+                "modified_object": self,
+                "previous_object": previous_object
             }
             self.callback(modify_info)
         else:
             self.callback()
 
     def pop(self, key):
+        previous_object = self.copy()
         r = super(Dicta, self).pop(key)
         if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "pop",
                 "key": key,
-                "modified_object": self
+                "modified_object": self,
+                "previous_object": previous_object
             }
             self.callback(modify_info)
         else:
@@ -590,13 +650,15 @@ class Dicta(dict, ChildConverter, DictUpdater):
         return r
 
     def popitem(self, key):
+        previous_object = self.copy()
         r = super(Dicta, self).popitem(key)
         if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "popitem",
                 "key": key,
-                "modified_object": self
+                "modified_object": self,
+                "previous_object": previous_object
             }
             self.callback(modify_info)
         else:
@@ -604,6 +666,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
         return r
     
     def setdefault(self, key, default=None):
+        previous_object = self.copy()
         r = super(Dicta, self).setdefault(key, default=default)
         if self.get_event:
             modify_info = {
@@ -611,7 +674,8 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 "mode": "setdefault",
                 "key": key,
                 "default": default,
-                "modified_object": self
+                "modified_object": self,
+                "previous_object": previous_object
             }
             self.callback(modify_info)
         else:
@@ -793,7 +857,7 @@ if __name__ == "__main__":
     # Declare the 'Dicta' class. Pass a 'path' string and 'callback' method as arguments
     dicta = Dicta()
 
-    # Set Callback method with optional *args and *kwargs
+    # Set Callback method with optional event argument
     def callback(evt):
         print(evt)
     dicta.bind_callback(callback)

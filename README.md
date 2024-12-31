@@ -108,29 +108,33 @@ A ```dict``` subclass.
 ##### Dicta.bind_callback()
 
 ```python
-Dicta.bind_callback(callback, response=False, *args, *kwargs)
+Dicta.bind_callback(callback)
 ```
 
-Sets the callback method for the Dicta Class. If `response=False` (default) the callback method only gets the `*args, *kwargs` as parameters you define. If `response=True` the callback method gets response from the Dicta Class. You should define your callback function with a `*kwargs` parameter or with three positional parameters:
+Sets the callback method for the Dicta Class. Pass an event argument (optional) to receive the data modification event:
 
-`def my_callback(**kwargs)`
+```python
+def my_callback(): 
+    print(dicta)
+Dicta.bind_callback(callback)
+```
 
 or
 
-`def my_callback(modifed_object, modify_info, modify_trace)`
+```python
+def my_callback(event): 
+    print(event)
+Dicta.bind_callback(callback)
+```
 
 ###### **Parameter**
 
 - **callback** *(method)*
-- **default_response** *(bool) (optional / default = False)*
 
 ###### **Callback**
 
-- **args** as defined in setCallback *(optional / default: None)*
-- **kwargs** as defined in setCallback *(optional / default: None)*
-- **modifed_object** *(object)*
-- ***modify_info*** *(json_string)*: Contains info about the data mod
-- **modify_trace** *(list)*: Contains the dict-tree-path to the modified object as a list starting from root*
+- **event** *(dict)*
+
 
 ---
 
