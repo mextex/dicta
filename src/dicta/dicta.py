@@ -93,7 +93,8 @@ class NestedSet(set, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "new",
-            "iterable": iterable
+            "iterable": iterable,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -106,7 +107,8 @@ class NestedSet(set, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "add",
-            "item": item
+            "item": item,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -115,7 +117,8 @@ class NestedSet(set, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "update",
-            "item": iterable
+            "item": iterable,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -124,6 +127,7 @@ class NestedSet(set, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "pop",
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -133,7 +137,8 @@ class NestedSet(set, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "remove",
-            "value": item
+            "value": item,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -142,7 +147,8 @@ class NestedSet(set, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "remove",
-            "value": item
+            "value": item,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -150,7 +156,8 @@ class NestedSet(set, ParentCaller):
         super(NestedSet, self).clear()
         modify_info = {
             "type": type(self),
-            "mode": "clear"
+            "mode": "clear",
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -166,7 +173,8 @@ class NestedTuple(tuple, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "new",
-            "iterable": iterable
+            "iterable": iterable,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -183,7 +191,8 @@ class NestedDict(dict, ChildConverter, ParentCaller, DictUpdater):
             "type": type(self),
             "mode": "setitem",
             "key": key,
-            "value": val
+            "value": val,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -192,7 +201,8 @@ class NestedDict(dict, ChildConverter, ParentCaller, DictUpdater):
         modify_info = {
             "type": type(self),
             "mode": "delitem",
-            "key": key
+            "key": key,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -200,7 +210,8 @@ class NestedDict(dict, ChildConverter, ParentCaller, DictUpdater):
         super(NestedDict, self).clear()
         modify_info = {
             "type": type(self),
-            "mode": "clear"
+            "mode": "clear",
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -209,7 +220,8 @@ class NestedDict(dict, ChildConverter, ParentCaller, DictUpdater):
         modify_info = {
             "type": type(self),
             "mode": "pop",
-            "key": key
+            "key": key,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -219,7 +231,8 @@ class NestedDict(dict, ChildConverter, ParentCaller, DictUpdater):
         modify_info = {
             "type": type(self),
             "mode": "popitem",
-            "key": key
+            "key": key,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -230,7 +243,8 @@ class NestedDict(dict, ChildConverter, ParentCaller, DictUpdater):
             "type": type(self),
             "mode": "setdefault",
             "key": key,
-            "default": default
+            "default": default,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -249,7 +263,8 @@ class NestedList(list, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "add",
-            "item": item
+            "item": item,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -258,7 +273,8 @@ class NestedList(list, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "delitem",
-            "index": index
+            "index": index,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -268,7 +284,8 @@ class NestedList(list, ChildConverter, ParentCaller):
             "type": type(self),
             "mode": "delslice",
             "start": i,
-            "end": j
+            "end": j,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -278,7 +295,8 @@ class NestedList(list, ChildConverter, ParentCaller):
             "type": type(self),
             "mode": "setitem",
             "index": index,
-            "value": value
+            "value": value,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -289,7 +307,8 @@ class NestedList(list, ChildConverter, ParentCaller):
             "mode": "setsclice",
             "start": i,
             "end": j,
-            "item": y
+            "item": y,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -299,7 +318,8 @@ class NestedList(list, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "append",
-            "item": obj
+            "item": obj,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -310,7 +330,8 @@ class NestedList(list, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "extend",
-            "iterable": iterable
+            "iterable": iterable,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -321,7 +342,8 @@ class NestedList(list, ChildConverter, ParentCaller):
             "type": type(self),
             "mode": "insert",
             "index": index,
-            "item": item
+            "item": item,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -332,7 +354,8 @@ class NestedList(list, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "pop",
-            "index": index
+            "index": index,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         return r
@@ -344,7 +367,8 @@ class NestedList(list, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "remove",
-            "value": value
+            "value": value,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -352,7 +376,8 @@ class NestedList(list, ChildConverter, ParentCaller):
         super(NestedList, self).clear()
         modify_info = {
             "type": type(self),
-            "mode": "clear"
+            "mode": "clear",
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -362,6 +387,7 @@ class NestedList(list, ChildConverter, ParentCaller):
         modify_info = {
             "type": type(self),
             "mode": "reverse",
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         
@@ -373,7 +399,8 @@ class NestedList(list, ChildConverter, ParentCaller):
             "type": type(self),
             "mode": "sort",
             "key": key,
-            "reverse": reverse
+            "reverse": reverse,
+            "modified_object": self
         }
         self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
 
@@ -417,7 +444,6 @@ class Dicta(dict, ChildConverter, DictUpdater):
             if hasattr(self, 'callback') and self.callback:
                 modify_trace.insert(0, self)
                 if self.get_event:
-                    # self.callback(modified_object=modified_object, modify_info=modify_info, modify_trace=[self])
                     self.callback(modify_info)
                 else:
                     self.callback()
@@ -431,9 +457,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                     "type": type(self),
                     "mode": "setitem",
                     "key": key,
-                    "value": val
+                    "value": val,
+                    "modified_object": self
                 }
-                # self.callback(modified_object=self, modify_info=modify_info, modify_trace=[self])
                 self.callback(modify_info)
             else:
                 self.callback()
@@ -446,9 +472,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
             modify_info = {
                 "type": type(self),
                 "mode": "delitem",
-                "key": key
+                "key": key,
+                "modified_object": self
             }
-            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
             self.callback(modify_info)
         else:
             self.callback()
@@ -542,9 +568,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
         if self.get_event:
             modify_info = {
                 "type": type(self),
-                "mode": "clear"
+                "mode": "clear",
+                "modified_object": self
             }
-            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
             self.callback(modify_info)
         else:
             self.callback()
@@ -555,9 +581,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
             modify_info = {
                 "type": type(self),
                 "mode": "pop",
-                "key": key
+                "key": key,
+                "modified_object": self
             }
-            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
             self.callback(modify_info)
         else:
             self.callback()
@@ -569,9 +595,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
             modify_info = {
                 "type": type(self),
                 "mode": "popitem",
-                "key": key
+                "key": key,
+                "modified_object": self
             }
-            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
             self.callback(modify_info)
         else:
             self.callback()
@@ -584,9 +610,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 "type": type(self),
                 "mode": "setdefault",
                 "key": key,
-                "default": default
+                "default": default,
+                "modified_object": self
             }
-            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
             self.callback(modify_info)
         else:
             self.callback()
