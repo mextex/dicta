@@ -404,7 +404,6 @@ class Dicta(dict, ChildConverter, DictUpdater):
         self.__prev_data_string = None
         self.callback = None
         self.callback_args = None
-        self.callback_kwargs = None
         self.binary_serializer = False
         self.serializer_hook = default_serializer_hook
         self.update(*args, **kwargs)
@@ -417,9 +416,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
             if hasattr(self, 'callback') and self.callback:
                 modify_trace.insert(0, self)
                 if self.get_response:
-                    self.callback(modified_object=modified_object, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)    
+                    self.callback(modified_object=modified_object, modify_info=modify_info, modify_trace=[self])    
                 else:
-                    self.callback(*self.callback_args, **self.callback_kwargs)
+                    self.callback()
             self.__prev_data_string = self.__current_data_string
 
     def __setitem__(self, key, val):
@@ -432,9 +431,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                     "key": key,
                     "value": val
                 }
-                self.callback(modified_object=self, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)
+                self.callback(modified_object=self, modify_info=modify_info, modify_trace=[self])
             else:
-                self.callback(*self.callback_args, **self.callback_kwargs)
+                self.callback()
         if hasattr(self, 'path') and self.path and isinstance(self.path, str):
             self.__export_file(self.path)
 
@@ -446,9 +445,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 "mode": "delitem",
                 "key": key
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)
+            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         else:
-            self.callback(*self.callback_args, **self.callback_kwargs)
+            self.callback()
 
     def __rewrite_recursively__(self, obj=None, new=None, init=False):
         if init:
@@ -541,9 +540,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 "type": type(self),
                 "mode": "clear"
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)
+            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         else:
-            self.callback(*self.callback_args, **self.callback_kwargs)
+            self.callback()
 
     def pop(self, key):
         r = super(Dicta, self).pop(key)
@@ -553,9 +552,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 "mode": "pop",
                 "key": key
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)
+            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         else:
-            self.callback(*self.callback_args, **self.callback_kwargs)
+            self.callback()
         return r
 
     def popitem(self, key):
@@ -566,9 +565,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 "mode": "popitem",
                 "key": key
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)
+            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         else:
-            self.callback(*self.callback_args, **self.callback_kwargs)
+            self.callback()
         return r
     
     def setdefault(self, key, default=None):
@@ -580,9 +579,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 "key": key,
                 "default": default
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)
+            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
         else:
-            self.callback(*self.callback_args, **self.callback_kwargs)
+            self.callback()
         return r
 
     def update(self, *args, **kwargs):
@@ -595,12 +594,10 @@ class Dicta(dict, ChildConverter, DictUpdater):
         DictUpdater.update(self, *args, **kwargs)
 
     # Custom dict methods
-    def bind_callback(self, callback, get_response=None, *args, **kwargs):
+    def bind_callback(self, callback, get_response=None):
         '''Set the callback function'''
         self.callback = callback
         self.get_response = get_response
-        self.callback_args = args
-        self.callback_kwargs = kwargs
 
     def bind_file(self, path, reset=False):
         '''Set the sync file path. Set reset=True if you want to reset the data in the file on startup. Default is False'''
@@ -762,7 +759,6 @@ if __name__ == "__main__":
     dicta = Dicta()
 
     # Set Callback method with optional *args and *kwargs
-    # add a **kwargs parameter to the callback function if you want get_response (default is False). 
     # Default get_response: class modified_object, dict modify_info, list modify_trace
     def callback():
         print(dicta)
