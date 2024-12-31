@@ -416,7 +416,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 self.__export_file(self.path)
             if hasattr(self, 'callback') and self.callback:
                 modify_trace.insert(0, self)
-                if self.response:
+                if self.get_response:
                     self.callback(modified_object=modified_object, modify_info=modify_info, modify_trace=[self], *self.callback_args, **self.callback_kwargs)    
                 else:
                     self.callback(*self.callback_args, **self.callback_kwargs)
@@ -425,7 +425,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
     def __setitem__(self, key, val):
         super(Dicta, self).__setitem__(key, self.__convert_child__(val))
         if hasattr(self, 'callback') and self.callback:
-            if self.response:
+            if self.get_response:
                 modify_info = {
                     "type": type(self),
                     "mode": "setitem",
@@ -440,7 +440,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
 
     def __delitem__(self, key):
         super(Dicta, self).__delitem__(key)
-        if self.response:
+        if self.get_response:
             modify_info = {
                 "type": type(self),
                 "mode": "delitem",
@@ -536,7 +536,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
     # Default dict methods
     def clear(self):
         super(Dicta, self).clear()
-        if self.response:
+        if self.get_response:
             modify_info = {
                 "type": type(self),
                 "mode": "clear"
@@ -547,7 +547,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
 
     def pop(self, key):
         r = super(Dicta, self).pop(key)
-        if self.response:
+        if self.get_response:
             modify_info = {
                 "type": type(self),
                 "mode": "pop",
@@ -560,7 +560,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
 
     def popitem(self, key):
         r = super(Dicta, self).popitem(key)
-        if self.response:
+        if self.get_response:
             modify_info = {
                 "type": type(self),
                 "mode": "popitem",
@@ -573,7 +573,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
     
     def setdefault(self, key, default=None):
         r = super(Dicta, self).setdefault(key, default=default)
-        if self.response:
+        if self.get_response:
             modify_info = {
                 "type": type(self),
                 "mode": "setdefault",
@@ -595,10 +595,10 @@ class Dicta(dict, ChildConverter, DictUpdater):
         DictUpdater.update(self, *args, **kwargs)
 
     # Custom dict methods
-    def bind_callback(self, callback, response=None, *args, **kwargs):
+    def bind_callback(self, callback, get_response=None, *args, **kwargs):
         '''Set the callback function'''
         self.callback = callback
-        self.response = response
+        self.get_response = get_response
         self.callback_args = args
         self.callback_kwargs = kwargs
 
@@ -762,8 +762,8 @@ if __name__ == "__main__":
     dicta = Dicta()
 
     # Set Callback method with optional *args and *kwargs
-    # add a **kwargs parameter to the callback function if you want response (default is False). 
-    # Default Response: class modified_object, dict modify_info, list modify_trace
+    # add a **kwargs parameter to the callback function if you want get_response (default is False). 
+    # Default get_response: class modified_object, dict modify_info, list modify_trace
     def callback():
         print(dicta)
     dicta.bind_callback(callback)
