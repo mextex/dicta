@@ -4,6 +4,7 @@ import os
 import re
 import pickle
 import json
+import inspect
 
 default_serializer_hook = "<serialized_object>"
 
@@ -403,7 +404,7 @@ class Dicta(dict, ChildConverter, DictUpdater):
         self.path = None
         self.__prev_data_string = None
         self.callback = None
-        self.callback_args = None
+        self.get_event = False
         self.binary_serializer = False
         self.serializer_hook = default_serializer_hook
         self.update(*args, **kwargs)
@@ -415,8 +416,9 @@ class Dicta(dict, ChildConverter, DictUpdater):
                 self.__export_file(self.path)
             if hasattr(self, 'callback') and self.callback:
                 modify_trace.insert(0, self)
-                if self.get_response:
-                    self.callback(modified_object=modified_object, modify_info=modify_info, modify_trace=[self])    
+                if self.get_event:
+                    # self.callback(modified_object=modified_object, modify_info=modify_info, modify_trace=[self])
+                    self.callback(modify_info)
                 else:
                     self.callback()
             self.__prev_data_string = self.__current_data_string
@@ -424,14 +426,15 @@ class Dicta(dict, ChildConverter, DictUpdater):
     def __setitem__(self, key, val):
         super(Dicta, self).__setitem__(key, self.__convert_child__(val))
         if hasattr(self, 'callback') and self.callback:
-            if self.get_response:
+            if self.get_event:
                 modify_info = {
                     "type": type(self),
                     "mode": "setitem",
                     "key": key,
                     "value": val
                 }
-                self.callback(modified_object=self, modify_info=modify_info, modify_trace=[self])
+                # self.callback(modified_object=self, modify_info=modify_info, modify_trace=[self])
+                self.callback(modify_info)
             else:
                 self.callback()
         if hasattr(self, 'path') and self.path and isinstance(self.path, str):
@@ -439,13 +442,14 @@ class Dicta(dict, ChildConverter, DictUpdater):
 
     def __delitem__(self, key):
         super(Dicta, self).__delitem__(key)
-        if self.get_response:
+        if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "delitem",
                 "key": key
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            self.callback(modify_info)
         else:
             self.callback()
 
@@ -535,51 +539,55 @@ class Dicta(dict, ChildConverter, DictUpdater):
     # Default dict methods
     def clear(self):
         super(Dicta, self).clear()
-        if self.get_response:
+        if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "clear"
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            self.callback(modify_info)
         else:
             self.callback()
 
     def pop(self, key):
         r = super(Dicta, self).pop(key)
-        if self.get_response:
+        if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "pop",
                 "key": key
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            self.callback(modify_info)
         else:
             self.callback()
         return r
 
     def popitem(self, key):
         r = super(Dicta, self).popitem(key)
-        if self.get_response:
+        if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "popitem",
                 "key": key
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            self.callback(modify_info)
         else:
             self.callback()
         return r
     
     def setdefault(self, key, default=None):
         r = super(Dicta, self).setdefault(key, default=default)
-        if self.get_response:
+        if self.get_event:
             modify_info = {
                 "type": type(self),
                 "mode": "setdefault",
                 "key": key,
                 "default": default
             }
-            self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            # self.call_to_parent(modified_object=self, modify_info=modify_info, modify_trace=[self])
+            self.callback(modify_info)
         else:
             self.callback()
         return r
@@ -594,10 +602,11 @@ class Dicta(dict, ChildConverter, DictUpdater):
         DictUpdater.update(self, *args, **kwargs)
 
     # Custom dict methods
-    def bind_callback(self, callback, get_response=None):
+    def bind_callback(self, callback):
         '''Set the callback function'''
         self.callback = callback
-        self.get_response = get_response
+        if len(inspect.signature(callback).parameters) > 0:
+            self.get_event = True
 
     def bind_file(self, path, reset=False):
         '''Set the sync file path. Set reset=True if you want to reset the data in the file on startup. Default is False'''
@@ -759,9 +768,8 @@ if __name__ == "__main__":
     dicta = Dicta()
 
     # Set Callback method with optional *args and *kwargs
-    # Default get_response: class modified_object, dict modify_info, list modify_trace
-    def callback():
-        print(dicta)
+    def callback(evt):
+        print(evt)
     dicta.bind_callback(callback)
     dicta.set_serializer(True)
     dicta.bind_file("data.json", True)
