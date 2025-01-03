@@ -124,7 +124,7 @@ or
 ```python
 def my_callback(event): 
     print(event)
-Dicta.bind_callback(callback)
+Dicta.bind_callback(my_callback)
 ```
 
 ###### **Parameter**
