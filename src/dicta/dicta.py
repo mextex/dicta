@@ -869,9 +869,17 @@ if __name__ == "__main__":
     dicta.set_serializer(True)
     dicta.bind_file("data.json", True)
     
-    dicta["set"] = {1,2,4,5}
-    dicta["set"].add(6)
-    dicta["list"] = [1,2,4,5]
-    dicta["list"].append(6)
+    # dicta["set"] = {1,2,4,5}
+    # dicta["set"].add(6)
+    # dicta["list"] = [1,2,4,5]
+    # dicta["list"].append(6)
+    a = {}
+    b = {}
+    b["c"] = []
+    a["b"] = b
+    dicta["a"] = a
+    dicta["a"]["b"]["c"] = [1,2,3,4]
+    
+
 
 
