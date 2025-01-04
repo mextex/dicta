@@ -135,7 +135,6 @@ Dicta.bind_callback(my_callback)
 
 - **event** *(dict)*
 
-
 ---
 
 ##### Dicta.bind_file()
