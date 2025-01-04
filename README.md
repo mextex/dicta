@@ -20,7 +20,7 @@
 To install Dicta, use pip:
 
 ```bash
-pip3 install dicta
+pip install dicta
 ```
 
 ## Usage
@@ -416,3 +416,4 @@ If you activate the binary-serializer all non-serializable objects will be encod
 - re
 - json
 - pickle
+- inspect
