@@ -116,7 +116,7 @@ Sets the callback method for the Dicta Class. Pass an event argument (optional) 
 ```python
 def my_callback(): 
     print(dicta)
-Dicta.bind_callback(callback)
+Dicta.bind_callback(my_callback)
 ```
 
 or
